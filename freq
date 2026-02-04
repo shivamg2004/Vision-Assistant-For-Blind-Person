@@ -1,0 +1,42 @@
+printf("Enter a paragraph (end input with a blank line):\n");
+
+// Read paragraph until a blank line or EOF
+char line[1024];
+input[0] = '\0';
+while(fgets(line, sizeof(line), stdin)) {
+    if(strcmp(line, "\n") == 0) break;
+    strcat(input, line);
+}
+
+// Tokenize input by space and punctuation
+const char *delimiters = " ,.-!?\n\t;:\"()[]{}'";
+char *token = strtok(input, delimiters);
+
+while(token != NULL) {
+    to_lower_str(token);
+
+    int idx = find_word(word_freqs, word_count, token);
+    if(idx == -1) {
+        // New word
+        strcpy(word_freqs[word_count].word, token);
+        word_freqs[word_count].count = 1;
+        word_count++;
+        if(word_count >= MAX_WORDS) {
+            printf("Exceeded max word limit.\n");
+            break;
+        }
+    } else {
+        // Existing word
+        word_freqs[idx].count++;
+    }
+
+    token = strtok(NULL, delimiters);
+}
+
+printf("\nWord frequencies:\n");
+for(int i = 0; i < word_count; i++) {
+    printf("%s : %d\n", word_freqs[i].word, word_freqs[i].count);
+}
+
+return 0;
+}
